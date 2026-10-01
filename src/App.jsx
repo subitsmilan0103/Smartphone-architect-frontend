@@ -70,11 +70,11 @@ function DetailedLens({ position }) {
   )
 }
 
-function Phone({ width, height, thickness, cutoutType, selectedColor }) {
+function Phone({ width, height, thickness, cutoutType, selectedColor, cornerRadius }) {
   return (
     <group>
       {/* keret */}
-      <RoundedBox args={[width, height, thickness]} radius={0.22} smoothness={8}>
+      <RoundedBox args={[width, height, thickness, cornerRadius]} radius={cornerRadius} smoothness={8}>
         <meshStandardMaterial 
           color={selectedColor.frame} 
           metalness={0.85} 
@@ -125,8 +125,12 @@ function App() {
   const [width, setWidth] = useState(3.2);
   const [height, setHeight] = useState(6.8);
   const [thickness, setThickness] = useState(0.35);
+  const [cornerRadius, setCornerRadius] = useState(0.22);
   const [selectedColor, setSelectedColor] = useState(COLORS[0]);
   const [cutoutType, setCutoutType] = useState('holepunch');
+
+  const maxAllowedRadius = Math.min(width, height, thickness)/2 - 0.005;
+  const safeCornerRadius = Math.min(cornerRadius, maxAllowedRadius);
 
   return (
     <div style={{ width: '100vw', height: '100vh', backgroundColor: '#121212', margin: 0, padding: 0 }}>
@@ -164,6 +168,15 @@ function App() {
             <div style={{ marginBottom: '20px' }}>
               <label style={{ fontSize: '0.85rem' }}>Thickness: {thickness.toFixed(2)}</label>
               <input type="range" min="0.25" max="0.6" step="0.02" value={thickness} onChange={(e) => setThickness(parseFloat(e.target.value))} style={{ width: '100%', marginTop: '4px' }} />
+            </div>
+
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ fontSize: '0.85rem' }}>Roundedness:</label>
+              <input type="range" min="0.02" max={maxAllowedRadius} step="0.01" value={cornerRadius} onChange={(e) => setCornerRadius(parseFloat(e.target.value))} style={{ width: '100%', marginTop: '4px' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: '#666' }}>
+                <span>Less rounded</span>
+                <span>More rounded</span>
+              </div>
             </div>
 
             <button 
@@ -233,6 +246,7 @@ function App() {
           thickness={thickness} 
           cutoutType={cutoutType} 
           selectedColor={selectedColor}
+          cornerRadius={cornerRadius}
         />
         
         <OrbitControls makeDefault enablePan={false} />

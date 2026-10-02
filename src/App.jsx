@@ -70,7 +70,7 @@ function DetailedLens({ position }) {
   )
 }
 
-function Phone({ width, height, thickness, cutoutType, selectedColor, cornerRadius }) {
+function Phone({ width, height, thickness, cutoutType, selectedColor, cornerRadius, displayShininess }) {
   return (
     <group>
       {/* keret */}
@@ -96,7 +96,7 @@ function Phone({ width, height, thickness, cutoutType, selectedColor, cornerRadi
       <group position={[0, 0, thickness/2 + 0.003]}>
         <mesh>
           <planeGeometry args={[width-0.12, height-0.12]} />
-          <meshStandardMaterial color="#020202" roughness={0.1} metalness={0.8} />
+          <meshStandardMaterial color="#020202" roughness={displayShininess} metalness={0.8} />
         </mesh>
 
         <CameraCutout type={cutoutType} height={height} />
@@ -125,9 +125,10 @@ function App() {
   const [width, setWidth] = useState(3.2);
   const [height, setHeight] = useState(6.8);
   const [thickness, setThickness] = useState(0.35);
-  const [cornerRadius, setCornerRadius] = useState(0.22);
-  const [selectedColor, setSelectedColor] = useState(COLORS[0]);
+  const [cornerRadius, setCornerRadius] = useState(0.1);
+  const [selectedColor, setSelectedColor] = useState(COLORS[1]);
   const [cutoutType, setCutoutType] = useState('holepunch');
+  const [displayShininess, setDisplayShininess] = useState(0.2);
 
   const maxAllowedRadius = Math.min(width, height, thickness)/2 - 0.005;
   const safeCornerRadius = Math.min(cornerRadius, maxAllowedRadius);
@@ -157,22 +158,50 @@ function App() {
             
             <div style={{ marginBottom: '14px' }}>
               <label style={{ fontSize: '0.85rem' }}>Width: {width.toFixed(2)}</label>
-              <input type="range" min="2.6" max="4.0" step="0.05" value={width} onChange={(e) => setWidth(parseFloat(e.target.value))} style={{ width: '100%', marginTop: '4px' }} />
+              <input 
+                type="range" 
+                min="2.6" 
+                max="4.0" 
+                step="0.05" 
+                value={width} 
+                onChange={(e) => setWidth(parseFloat(e.target.value))} 
+                style={{ width: '100%', marginTop: '4px' }} />
             </div>
 
             <div style={{ marginBottom: '14px' }}>
               <label style={{ fontSize: '0.85rem' }}>Height: {height.toFixed(2)}</label>
-              <input type="range" min="5.5" max="7.5" step="0.05" value={height} onChange={(e) => setHeight(parseFloat(e.target.value))} style={{ width: '100%', marginTop: '4px' }} />
+              <input 
+                type="range" 
+                min="5.5" 
+                max="7.5" 
+                step="0.05" 
+                value={height} 
+                onChange={(e) => setHeight(parseFloat(e.target.value))} 
+                style={{ width: '100%', marginTop: '4px' }} />
             </div>
 
             <div style={{ marginBottom: '20px' }}>
               <label style={{ fontSize: '0.85rem' }}>Thickness: {thickness.toFixed(2)}</label>
-              <input type="range" min="0.25" max="0.6" step="0.02" value={thickness} onChange={(e) => setThickness(parseFloat(e.target.value))} style={{ width: '100%', marginTop: '4px' }} />
+              <input 
+                type="range" 
+                min="0.25" 
+                max="0.6" 
+                step="0.02" 
+                value={thickness} 
+                onChange={(e) => setThickness(parseFloat(e.target.value))} 
+                style={{ width: '100%', marginTop: '4px' }} />
             </div>
 
             <div style={{ marginBottom: '20px' }}>
               <label style={{ fontSize: '0.85rem' }}>Roundedness:</label>
-              <input type="range" min="0.02" max={maxAllowedRadius} step="0.01" value={cornerRadius} onChange={(e) => setCornerRadius(parseFloat(e.target.value))} style={{ width: '100%', marginTop: '4px' }} />
+              <input 
+                type="range" 
+                min="0.02" 
+                max={maxAllowedRadius} 
+                step="0.01" 
+                value={cornerRadius} 
+                onChange={(e) => setCornerRadius(parseFloat(e.target.value))} 
+                style={{ width: '100%', marginTop: '4px' }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: '#666' }}>
                 <span>Less rounded</span>
                 <span>More rounded</span>
@@ -191,7 +220,7 @@ function App() {
         {/* 2. lepes: anyag, szin, kamera valasztas */}
         {step === 2 && (
           <div>
-            <label style={{ fontSize: '0.85rem', display: 'block', marginBottom: '8px' }}>Materials & Colors:</label>
+            <label style={{ fontSize: '0.85rem', display: 'block', marginBottom: '8px' }}>Colors:</label>
             <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
               {COLORS.map((c) => (
                 <div 
@@ -222,6 +251,23 @@ function App() {
               </select>
             </div>
 
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ fontSize: '0.85rem' }}>Display Shininess:</label>
+              <input 
+                type="range" 
+                min="0" 
+                max="1" 
+                step="0.1"
+                value={displayShininess} 
+                onChange={(e) => setDisplayShininess(parseFloat(e.target.value))}
+                style={{ width: '100%', marginTop: '6px' }}
+              />
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: '#666' }}>
+                <span>Shiny</span>
+                <span>Matte</span>
+              </div>
+            </div>
+
             <button 
               onClick={() => setStep(1)}
               style={{ width: '100%', padding: '8px', backgroundColor: 'transparent', color: '#999', border: '1px solid #444', borderRadius: '8px', cursor: 'pointer' }}
@@ -247,6 +293,7 @@ function App() {
           cutoutType={cutoutType} 
           selectedColor={selectedColor}
           cornerRadius={cornerRadius}
+          displayShininess={displayShininess}
         />
         
         <OrbitControls makeDefault enablePan={false} />
